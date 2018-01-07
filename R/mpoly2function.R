@@ -1,3 +1,35 @@
+# function to create the poly string recursively
+gen_poly_string <- function(node) {
+  if (length(node$children) == 0)
+    return(
+      glue::glue(ifelse(node$coef == 1,
+                        "{node$name}", # we don't want 1 * x, but just x
+                        "{node$coef} * {node$name}"))
+    )
+
+  # if we don't have the current node in the poly, just take the children
+  if (is.null(node$coef) || node$coef == 0) {
+    return(
+      glue::glue(ifelse(length(node$children) == 1,
+                      "{node$name} * {childsum}", # if only one child don't add ()
+                      "{node$name} * ({childsum} )"),
+               childsum = paste(sapply(node$children, gen_poly_string), collapse=" + "))
+    )
+  }
+
+  # if we are at the root node, just add the coef and generate the rest of the poly string, so we
+  # don't have 1*(...), as that is more multiplication and thus costly.
+  if(node$name == "1") {
+    return(
+      glue::glue("{node$coef} + {childsum}",
+                 childsum = paste(sapply(node$children, gen_poly_string), collapse=" + "))
+    )
+  }
+
+  glue::glue("{node$name} * ( {node$coef} + {childsum} )",
+             childsum = paste(sapply(node$children, gen_poly_string), collapse=" + "))
+}
+
 mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
   ## argument checking
   stopifnot(is.character(varorder))
@@ -11,45 +43,33 @@ mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
   ## deal with constant polynomials
   if(is.constant(x)) return( function(.) unlist(x)[["coef"]] )
 
-  ## general polynomials as a bunch of arguments
-  mpoly_string <- print(x, stars = TRUE, silent = TRUE)
-
-  #### Extracting used degrees of vars which should be precomputed
   varnames <- vars(x)
-  degrees <- apply(do.call(rbind, exponents(x)), 2, max)
 
-  init_block <- ""
+  # Initialise the dataframe which will be converted to a data.tree object
+  poly_tree_df <- data.frame(pathString = character(length(x)), coef = numeric(length(x)),
+                             stringsAsFactors = FALSE)
 
-  # if there are several degrees of a variable, we'll create its matrix of
-  # precalculated pows, so we need to update the mpoly_string to reflect that
-  for (var in varnames) {
-    if (degrees[var] > 1) {
+  # populate the data.frame from the mpoly PLEASE EXPLAIN SOMEWHERE
+  for (i in seq_along(poly_tree_df[,1])) {
+    monom <- x[[i]]
+    poly_tree_df$coef[i] <- monom["coef"]
+    if (length(monom) == 1) {
+      poly_tree_df$pathString[i] <- "1"
+    } else {
+      monom_vars <- names(monom)[-which(names(monom)=="coef")]
+      varspath <- paste(collapse = "/", sapply(monom_vars, function(v){
+        paste(rep(v, monom[v]), collapse = "/")
+      }))
 
-      if (!compile_c) {
-        var_pows_init <- glue("{var}_pows <- matrix(numeric(length({var}) * {degrees[var]}),
-                              ncol = {degrees[var]})\n{var}_pows[,1] <- {var}\n\n")
-      } else {
-        var_pows_init <- glue("double {var}_pows[{degrees[var]}];{var}_pows[0] = {var}[i];")
-      }
-
-      for (deg in 2:degrees[var]) {
-        if (!compile_c) {
-          var_pows_init <- glue(var_pows_init, "{var}_pows[,{deg}] <- {var}*{var}_pows[,{deg-1}]\n\n")
-          mpoly_string <- gsub(paste0(var,"\\*\\*",deg),
-                               sprintf("%s_pows[, %s]", var, deg),
-                               mpoly_string)
-
-        } else {
-          var_pows_init <- glue(var_pows_init, "{var}_pows[{deg-1}] = {var}[i]*{var}_pows[{deg-2}];")
-          mpoly_string <- gsub(paste0(var,"\\*\\*",deg),
-                               sprintf("%s_pows[%s]", var, deg-1),
-                               mpoly_string)
-        }
-      }
-
-      init_block <- glue(init_block, var_pows_init, "\n\n")
+      poly_tree_df$pathString[i] <- paste0("1/", varspath)
     }
   }
+
+  # create the data.tree object from the dataframe
+  poly_tree <- as.Node(poly_tree_df)
+
+  # generate poly string from tree recursively
+  poly_string <- gen_poly_string(poly_tree)
 
   #### Generating function from mpoly_string and adding precomputing code for new vars
   ##### R version
@@ -58,8 +78,7 @@ mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
 
     fun_string <- glue("
       function({fun_args}) {{
-        {init_block}
-        {mpoly_string}
+        {poly_string}
       }}
     ")
     return(eval(parse(text = fun_string)))
@@ -68,9 +87,9 @@ mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
   ##### Rcpp version
   # we need the indexed version of mpoly_string to use in for loop in C
   # we add spaces to beginning and end of mpoly_string to ease regex
-  mpoly_string <- paste0(" ", mpoly_string, " ")
+  poly_string <- paste0(" ", poly_string, " ")
   for (var in varnames) {
-    mpoly_string <- gsub(paste0(" ", var, " "), paste0(" ", var, "[i] "), mpoly_string)
+    poly_string <- gsub(paste0(" ", var, " "), paste0(" ", var, "[i] "), poly_string)
   }
 
   fun_args <- paste(sapply(varorder, function(var){
@@ -82,8 +101,7 @@ mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
       int n = {varorder[1]}.size();
       NumericVector result(n);
       for (int i = 0; i < n; i++) {{
-        {init_block}
-        result[i] = {mpoly_string};
+        result[i] = {poly_string};
       }}
       return result;
     }}
