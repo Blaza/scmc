@@ -25,17 +25,35 @@ optimal_points <- function(N, moment_fun = NULL, sample = NULL) {
 }
 
 
-#' Central normal moments calculation
+#' Theoretical moments calculation
 #'
 #' @param k The moment which to calculate
 #' @param sd The standard deviation of the normal distibution (mean is assumed 0)
-#' @return The k-th moment of Normal(0, sd) distribution.
+#' @param rate The rate parameter of the exponential distribution
+#' @param supp The vector (a, b) indicating the support of the uniform distribution
+#' @return The k-th moment of the distribution.
 #'
 #' @export
-normal_moment_fun <- function(k, sd = 1) {
+norm_moment_fun <- function(k, sd = 1) {
   if (k %% 2 == 1)
     return(0)
 
   n <- k/2
   sd^k * 2^n * gamma(n + 0.5) /sqrt(pi)
+}
+
+#' @rdname norm_moment_fun
+#' @export
+exp_moment_fun <- function(k, rate = 1) {
+  factorial(k) / (rate^k)
+}
+
+#' @rdname norm_moment_fun
+#' @export
+unif_moment_fun <- function(k, supp = c(0, 1)) {
+  a <- supp[1]
+  b <- supp[2]
+
+  n <- k+1
+  (b^n - a^n)/(n*(b-a))
 }

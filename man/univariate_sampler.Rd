@@ -5,7 +5,8 @@
 \alias{conditional_sampler}
 \title{Create a univariate distribution sampler}
 \usage{
-univariate_sampler(inverse_cdf, col_pts, gss = 1, compile_c = FALSE)
+univariate_sampler(inverse_cdf, col_pts, xdist = "norm", gss = 1,
+  compile_c = FALSE)
 
 conditional_sampler(inverse_cdf, col_pts, gss = 1, compile_c = FALSE)
 }

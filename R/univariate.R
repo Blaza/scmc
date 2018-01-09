@@ -26,18 +26,29 @@
 #'   distributions on which the wanted distribution is conditioned. The list should follow the order
 #'   as in inverse_cdf function} }
 #' @export
-univariate_sampler <- function(inverse_cdf, col_pts, gss = 1, compile_c = FALSE) {
-  poly <- lagrange(col_pts, function(x) inverse_cdf(pnorm(x, sd = gss)), compile_c = compile_c)
+univariate_sampler <- function(inverse_cdf, col_pts, xdist = "norm", gss = 1, compile_c = FALSE) {
+  if (xdist == "norm") {
+    poly <- lagrange(function(x) inverse_cdf(pnorm(x, sd = gss)), col_pts, compile_c = compile_c)
 
-  function(n) {
-    poly(rnorm(n, sd = gss))
+    function(n) {
+      poly(rnorm(n, sd = gss))
+    }
+  } else {
+    xcdf <- match.fun(paste0("p", xdist))
+    poly <- lagrange(function(x) inverse_cdf(xcdf(x)), col_pts, compile_c = compile_c)
+
+    xrand <- match.fun(paste0("r", xdist))
+    function(n) {
+      poly(xrand(n))
+    }
   }
 }
+
 
 #' @rdname univariate_sampler
 #' @export
 conditional_sampler <- function(inverse_cdf, col_pts, gss = 1, compile_c = FALSE) {
-  poly <- lagrange(col_pts, function(...) {
+  poly <- lagrange(col_pts = col_pts, FUN = function(...) {
     args <- list(...)
     n <- length(args)
     do.call(inverse_cdf, c(args[-n], list(pnorm(args[[n]], sd = gss))))
