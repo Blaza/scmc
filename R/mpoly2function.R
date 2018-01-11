@@ -2,8 +2,9 @@
 gen_poly_string <- function(node) {
   if (length(node$children) == 0)
     return(
-      glue::glue(ifelse(node$coef == 1,
-                        "{node$name}", # we don't want 1 * x, but just x
+      glue::glue(switch(as.character(node$coef),
+                        "1" = "{node$name}", # we don't want 1 * x, but just x
+                        "-1" = "- {node$name}",
                         "{node$coef} * {node$name}"))
     )
 
@@ -70,6 +71,7 @@ mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
 
   # generate poly string from tree recursively
   poly_string <- gen_poly_string(poly_tree)
+  poly_string <- gsub("\\+\\ \\-", "-", poly_string)
 
   #### Generating function from mpoly_string and adding precomputing code for new vars
   ##### R version
