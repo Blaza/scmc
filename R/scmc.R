@@ -5,7 +5,7 @@
 #'
 #' @docType package
 #' @author Blagoje Ivanovic <blagoje.r.ivanovic@gmail.com>
-#' @import Rcpp mpoly glue
+#' @import Rcpp glue
 #' @import data.tree
 #' @importFrom Rcpp evalCpp
 #' @useDynLib scmc

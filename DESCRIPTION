@@ -8,7 +8,7 @@ Description: Fast approximate multivariate distribution sampling using sophistic
 License: BSD
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.12), mpoly, glue, data.tree
+Imports: Rcpp (>= 0.12.12), glue, data.tree
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: copula
 RoxygenNote: 6.0.1
