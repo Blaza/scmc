@@ -33,8 +33,10 @@ lagrange <- function(FUN, col_pts, compile_c = FALSE, digits = 16) {
     if(length(degs) == 0)
       return("1")
 
-    monom_string <- paste0(ifelse(degs == 0, "", paste0(varnames, "^", degs)), collapse = " * ")
-    monom_string <- gsub("\\^1", "", monom_string) # remove ^1 if present
+    monom_string <- paste0(ifelse(degs == 1,
+                                  varnames,
+                                  paste0(varnames, "^", degs)),
+                           collapse = " * ")
 
     if (length(degs) == 1 && degs == 1)
       monom_string
