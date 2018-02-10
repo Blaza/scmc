@@ -20,6 +20,7 @@
 #' @param gss The sigma value of the approximating normal variable if using grid stretching.
 #' @param compile_c Logical indicating whether to compile the resulting sampling function as C code.
 #' @param transform A function to apply to the sample.
+#' @param digits The number of decimal places to round the polynomial coefficients to.
 #' @return \itemize{ \item For univariate_sampler, a function which takes a single argument n, and
 #'   generates a sample of size n from the wanted distribution. \item For conditional_sampler, a
 #'   function which takes two arguments: \itemize{ \item n - the size of the sample to generate
@@ -27,17 +28,19 @@
 #'   distributions on which the wanted distribution is conditioned. The list should follow the order
 #'   as in inverse_cdf function} }
 #' @export
-univariate_sampler <- function(inverse_cdf, col_pts, xdist = "norm",
-                               gss = 1, compile_c = FALSE, transform = identity) {
+univariate_sampler <- function(inverse_cdf, col_pts, xdist = "norm", gss = 1,
+                               compile_c = FALSE, transform = identity, digits = 16) {
   if (xdist == "norm") {
-    poly <- lagrange(function(x) inverse_cdf(pnorm(x, sd = gss)), col_pts, compile_c = compile_c)
+    poly <- lagrange(function(x) inverse_cdf(pnorm(x, sd = gss)), col_pts,
+                     compile_c = compile_c, digits = digits)
 
     function(n) {
       transform(poly(rnorm(n, sd = gss)))
     }
   } else {
     xcdf <- match.fun(paste0("p", xdist))
-    poly <- lagrange(function(x) inverse_cdf(xcdf(x)), col_pts, compile_c = compile_c)
+    poly <- lagrange(function(x) inverse_cdf(xcdf(x)), col_pts,
+                     compile_c = compile_c, digits = digits)
 
     xrand <- match.fun(paste0("r", xdist))
     function(n) {

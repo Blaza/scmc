@@ -6,7 +6,7 @@
 \title{Create a univariate distribution sampler}
 \usage{
 univariate_sampler(inverse_cdf, col_pts, xdist = "norm", gss = 1,
-  compile_c = FALSE, transform = identity)
+  compile_c = FALSE, transform = identity, digits = 16)
 
 conditional_sampler(inverse_cdf, col_pts, gss = 1, compile_c = FALSE)
 }
@@ -21,6 +21,8 @@ scmc::optimal_points()).}
 \item{compile_c}{Logical indicating whether to compile the resulting sampling function as C code.}
 
 \item{transform}{A function to apply to the sample.}
+
+\item{digits}{The number of decimal places to round the polynomial coefficients to.}
 }
 \value{
 \itemize{ \item For univariate_sampler, a function which takes a single argument n, and

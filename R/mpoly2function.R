@@ -36,7 +36,7 @@ mpoly2function <- function(x, compile_c = FALSE){
     x <- as.matrix(x)
 
   # remove zero terms
-  x <- x[x[, "coef"] != 0, ]
+  x <- x[x[, "coef"] != 0, , drop = FALSE]
 
   # get names of vars
   varnames <- head(colnames(x), -1)
