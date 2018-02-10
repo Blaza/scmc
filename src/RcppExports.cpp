@@ -6,18 +6,6 @@
 
 using namespace Rcpp;
 
-// C_lagrange_weights
-NumericVector C_lagrange_weights(List col_pts, IntegerMatrix indices);
-RcppExport SEXP _scmc_C_lagrange_weights(SEXP col_ptsSEXP, SEXP indicesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type col_pts(col_ptsSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type indices(indicesSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_lagrange_weights(col_pts, indices));
-    return rcpp_result_gen;
-END_RCPP
-}
 // calc_optimal_points
 NumericVector calc_optimal_points(NumericVector moments, int N);
 RcppExport SEXP _scmc_calc_optimal_points(SEXP momentsSEXP, SEXP NSEXP) {
@@ -44,7 +32,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_scmc_C_lagrange_weights", (DL_FUNC) &_scmc_C_lagrange_weights, 2},
     {"_scmc_calc_optimal_points", (DL_FUNC) &_scmc_calc_optimal_points, 2},
     {"_scmc_sample_optimal_points", (DL_FUNC) &_scmc_sample_optimal_points, 2},
     {NULL, NULL, 0}
