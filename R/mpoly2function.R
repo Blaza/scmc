@@ -76,7 +76,7 @@ mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
   #### Generating function from mpoly_string and adding precomputing code for new vars
   ##### R version
   if (!compile_c) {
-    fun_args <- paste(varorder, collapse = ", ")
+    fun_args <- paste(varnames, collapse = ", ")
 
     fun_string <- glue("
       function({fun_args}) {{
@@ -94,13 +94,13 @@ mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
     poly_string <- gsub(paste0(" ", var, " "), paste0(" ", var, "[i] "), poly_string)
   }
 
-  fun_args <- paste(sapply(varorder, function(var){
+  fun_args <- paste(sapply(varnames, function(var){
     paste0("NumericVector ", var)
   }), collapse = ", ")
 
   fun_string <- glue("
     NumericVector fun({fun_args}) {{
-      int n = {varorder[1]}.size();
+      int n = {varnames[1]}.size();
       NumericVector result(n);
       for (int i = 0; i < n; i++) {{
         result[i] = {poly_string};
