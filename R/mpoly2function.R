@@ -31,28 +31,24 @@ gen_poly_string <- function(node) {
              childsum = paste(sapply(node$children, gen_poly_string), collapse=" + "))
 }
 
-mpoly2function <- function(x, varorder = vars(x), compile_c = FALSE){
-  ## argument checking
-  stopifnot(is.character(varorder))
-  stopifnot(is.mpoly(x))
+mpoly2function <- function(x, compile_c = FALSE){
+  if (!is.matrix(x))
+    x <- as.matrix(x)
 
-  if(!setequal(varorder, vars(x))){
-    stop("varorder must contain all of the variables of x.",
-         call. = FALSE)
-  }
+  # remove zero terms
+  x <- x[x[, "coef"] != 0, ]
 
-  ## deal with constant polynomials
-  if(is.constant(x)) return( function(.) unlist(x)[["coef"]] )
-
-  varnames <- vars(x)
+  # get names of vars
+  varorder <- head(colnames(x), -1)
 
   # Initialise the dataframe which will be converted to a data.tree object
-  poly_tree_df <- data.frame(pathString = character(length(x)), coef = numeric(length(x)),
+  poly_tree_df <- data.frame(pathString = character(nrow(x)), coef = numeric(nrow(x)),
                              stringsAsFactors = FALSE)
 
   # populate the data.frame from the mpoly PLEASE EXPLAIN SOMEWHERE
   for (i in seq_along(poly_tree_df[,1])) {
-    monom <- x[[i]]
+    monom <- x[i, ]
+    monom <- monom[c(head(monom, -1) > 0, TRUE)] # get non zero degrees and coef
     poly_tree_df$coef[i] <- monom["coef"]
     if (length(monom) == 1) {
       poly_tree_df$pathString[i] <- "1"

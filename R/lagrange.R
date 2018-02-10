@@ -8,41 +8,47 @@
 #'   be a list of node points for multivariate polynomial.
 #' @param compile_c Logical indicating whether to compile the function using Rcpp, resulting in
 #'   faster evaluation later on.
+#' @param digits The number of decimal places to round the coefficients to.
 #' @return The function which evaluates the Lagrange polynomial.
 #' @export
-lagrange <- function(FUN, col_pts, compile_c = FALSE) {
+lagrange <- function(FUN, col_pts, compile_c = FALSE, digits = 16) {
   if (is.numeric(col_pts))
     col_pts <- list(col_pts)
+
+  col_grid <- do.call(expand.grid, col_pts)
 
   if (is.numeric(FUN)) {
     yvals <- FUN
   } else {
-    yvals <- apply(do.call(expand.grid, col_pts), 1, function(row)
+    yvals <- apply(col_grid, 1, function(row)
       do.call(FUN, unname(as.list(row))))
   }
 
-  indices <- as.matrix(do.call(expand.grid, lapply(col_pts, seq_along)) - 1)
-  lambda_prods <- C_lagrange_weights(col_pts, indices)
+  lm_data <- cbind(col_grid, y = yvals)
 
-  # initialise main polynomial
-  poly <- list(c(coef = 0))
-  # pre-generate mpoly objects which represent variables, so they can be operated on as polynomials
-  # this is to improve speed, as calling mp(...) takes a long time so it should be in the loop
-  var_polys <- list()
-  for (d in seq_along(col_pts)) {
-    var_polys[[d]] <- mp(paste0("x", d))
-  }
+  monom_degrees <- do.call(expand.grid, lapply(col_pts, seq_along)) - 1
+  formula_members <- apply(monom_degrees, 1, function(degs) {
+    degs <- degs[degs > 0] # remove zero degree variables
+    varnames <- names(degs)
+    if(length(degs) == 0)
+      return("1")
 
-  for (i in seq_along(yvals)) {
-    poly_elem <- yvals[i] * lambda_prods[i]
-    for (d in seq_along(col_pts)) {
-      for (l in seq_along(col_pts[[d]])) {
-        if (l - 1 != indices[i, d])
-          poly_elem <- poly_elem * (var_polys[[d]] + (-col_pts[[d]][l]))
-      }
-    }
-    poly <- poly + poly_elem
-  }
+    monom_string <- paste0(ifelse(degs == 0, "", paste0(varnames, "^", degs)), collapse = " * ")
+    monom_string <- gsub("\\^1", "", monom_string) # remove ^1 if present
+
+    if (length(degs) == 1 && degs == 1)
+      monom_string
+    else
+      sprintf("I(%s)", monom_string)
+  })
+
+  lm_formula <- sprintf("y ~ %s", paste(formula_members, collapse = " + "))
+
+  poly_lm <- lm(lm_formula, data = lm_data)
+
+  poly <- as.matrix(cbind(monom_degrees, coef = poly_lm$coefficients))
+  #poly[abs(poly[,"coef"]) < eps, "coef"] <- 0
+  poly[, "coef"] <- round(poly[, "coef"], digits)
 
   mpoly2function(poly, compile_c = compile_c)
 }
