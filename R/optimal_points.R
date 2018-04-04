@@ -57,3 +57,21 @@ unif_moment_fun <- function(k, supp = c(0, 1)) {
   n <- k+1
   (b^n - a^n)/(n*(b-a))
 }
+
+
+#' Chebyshev Nodes
+#'
+#' Calculate Chebyshev points for interpolation
+#'
+#' @param n The number of points to generate
+#' @param interval The interval over which to calculate Chebyshev nodes
+#' @return A numeric vector containing n Chebyshev nodes in the interval 'interval'
+#' @export
+chebyshev_nodes <- function(n, interval = c(-1, 1)) {
+  k <- seq_len(n)
+  a <- interval[1]
+  b <- interval[2]
+
+  nodes <- (a+b)/2 + cos(pi * (2*k - 1) / (2*n)) * (b-a)/2
+  nodes
+}
