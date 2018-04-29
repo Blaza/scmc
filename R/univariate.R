@@ -32,6 +32,9 @@ univariate_sampler <- function(inverse_cdf, col_pts, xdist = "norm",
   if (xdist == "norm") {
     poly <- lagrange(function(x) inverse_cdf(pnorm(x, sd = gss)), col_pts, compile_c = compile_c)
 
+    if (require("RcppZiggurat"))
+      rnorm <- function(n, sd) sd*zrnorm(n)
+
     function(n) {
       transform(poly(rnorm(n, sd = gss)))
     }
