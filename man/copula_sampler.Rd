@@ -4,7 +4,7 @@
 \alias{copula_sampler}
 \title{Generate a sample from a copula}
 \usage{
-copula_sampler(copula, N, compile_c = FALSE)
+copula_sampler(copula, N, gss = 1.37, compile_c = FALSE)
 }
 \arguments{
 \item{copula}{An R object of class "Copula"}
