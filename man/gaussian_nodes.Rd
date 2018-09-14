@@ -16,3 +16,6 @@ A numeric vector containing n Gaussian quadrature nodes
 Calculate Gaussian quadrature nodes for interpolation with regard to the
 standard normal density as the weighting function
 }
+\details{
+This is a wrapper for optimal_points(n, norm_moment_fun).
+}

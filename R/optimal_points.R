@@ -45,6 +45,8 @@ norm_moment_fun <- function(k, sd = 1) {
 #' Calculate Gaussian quadrature nodes for interpolation with regard to the
 #' standard normal density as the weighting function
 #'
+#' This is a wrapper for optimal_points(n, norm_moment_fun).
+#'
 #' @param n The number of points to generate
 #' @return A numeric vector containing n Gaussian quadrature nodes
 #' @export
