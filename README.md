@@ -71,3 +71,34 @@ curve(dlogis(x), add = TRUE, col = "green")
 ![](README.tex_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 The curves are nearly the same, so the approximation is good.
+
+### Example: Gamma distribution
+
+For the next example, we’ll use the <img src="/tex/dc497f9bd34f58ba60395b2ad6875709.svg?invert_in_darkmode&sanitize=true" align=middle width=46.80373994999999pt height=24.65753399999998pt/> distribution. This
+is a positive distribution, so we would like to transform it using the
+`log` transform to get a real variable and then upon sampling use the
+`exp` transform to get a sample from the original distribution. The code
+example follows
+
+``` r
+library(scmc)
+# create the sampler
+sampler <- univariate_sampler(function(x) qgamma(x, 5, 2),
+                              gaussian_nodes(7),
+                              transform = log, # the transformation of
+                                               # the quantile function
+                              inv_transform = exp) # the inverse of transform
+
+# generate 10000 random variates
+smp <- sampler(1e5)
+```
+
+``` r
+smp_ecdf <- ecdf(smp)
+curve(smp_ecdf(x), xlim = c(0, 10))
+curve(pgamma(x, 5, 2), add = TRUE, col = "green")
+```
+
+![](README.tex_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+Again, the approximation is excellent.
