@@ -78,8 +78,10 @@ For the next example, we’ll use the [gamma
 distribution](https://en.wikipedia.org/wiki/Gamma_distribution),
 specifically <img src="/tex/dc497f9bd34f58ba60395b2ad6875709.svg?invert_in_darkmode&sanitize=true" align=middle width=46.80373994999999pt height=24.65753399999998pt/>. This is a positive distribution, so we
 would like to transform it using the `log` transform to get a real
-variable and then upon sampling use the `exp` transform to get a sample
-from the original distribution. The code example follows
+valued random variable and then upon sampling use the `exp` transform to
+get a sample from the original distribution. Basically, we model
+<img src="/tex/816ffca0f61d00f9b149e524bf3e07a6.svg?invert_in_darkmode&sanitize=true" align=middle width=37.16895599999999pt height=22.831056599999986pt/> instead of <img src="/tex/91aac9730317276af725abd8cef04ca9.svg?invert_in_darkmode&sanitize=true" align=middle width=13.19638649999999pt height=22.465723500000017pt/> and sample <img src="/tex/310638b5e7d0326481035b4da99224b2.svg?invert_in_darkmode&sanitize=true" align=middle width=37.46096969999999pt height=27.91243950000002pt/> to get <img src="/tex/91aac9730317276af725abd8cef04ca9.svg?invert_in_darkmode&sanitize=true" align=middle width=13.19638649999999pt height=22.465723500000017pt/>. The
+code example follows
 
 ``` r
 library(scmc)
