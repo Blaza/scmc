@@ -26,13 +26,13 @@ the package capabilities.
 We’ll generate variates from the [Logistic
 distribution](https://en.wikipedia.org/wiki/Logistic_distribution).
 
-The SCMC method implies interpolating $F*Y^{-1}(F*X(x))$, where $Y$ is
+The SCMC method implies interpolating $F\_Y^{-1}(F\_X(x))$, where $Y$ is
 the target random variable and $X$ is a random variable which can be
-efficiently generated, and generating the samples $y*i, i=1,,n$ using
-the formula $y*i = F*Y^{-1}(F*X(*i))$, where $*i$ are variates from the
-$X$ distribution. In this example we’ll use the standard normal variable
-$X$. By default, we use the `RcppZiggurat::zrnorm` function to generate
-normal variates.
+efficiently generated, and generating the samples $y\_i, i=1,,n$ using
+the formula $y\_i = F\_Y^{-1}(F\_X(\_i))$, where $\_i$ are variates from
+the $X$ distribution. In this example we’ll use the standard normal
+variable $X$. By default, we use the `RcppZiggurat::zrnorm` function to
+generate normal variates.
 
 The code to generate the Logistic distribution in the `scmc` package is
 
@@ -50,10 +50,10 @@ smp <- sampler(1e5)
 ```
 
 In its basic form, the `univariate_sampler` function requires the
-inverse $F*Y^{-1}$ (i.e. the quantile function of $Y$) as the first
+inverse $F\_Y^{-1}$ (i.e. the quantile function of $Y$) as the first
 argument, and the nodes for the interpolation. In cases where normally
 distributed $X$ are used, optimal nodes for interpolation are the nodes
-of the Gaussian quadrature with respect to the weight function $f*X(x)$
+of the Gaussian quadrature with respect to the weight function $f\_X(x)$
 (density of $X$). The third argument to `univariate_sampler` is `xdist`
 which is by default `"norm"`, indicating the standard normal
 distribution.
