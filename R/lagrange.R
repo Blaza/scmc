@@ -21,7 +21,8 @@ lagrange <- function(FUN, col_pts) {
       do.call(FUN, unname(as.list(row))))
   }
 
-  lm_data <- cbind(col_grid, y = yvals)
+  indices <- as.matrix(do.call(expand.grid, lapply(col_pts, seq_along)) - 1)
+  lambda_prods <- C_lagrange_weights(col_pts, indices)
 
   function (...) {
     args <- list(...)
