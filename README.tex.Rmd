@@ -1,6 +1,7 @@
 ---
 title: "SCMC - Stochastic Collocation Monte Carlo"
 output: github_document
+bibliography: biblio.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -79,12 +80,64 @@ sampler <- univariate_sampler(function(x) qgamma(x, 5, 2),
 smp <- sampler(1e5)
 ```
 
-We can check the quality of the sample distribution by plotting the empirical cdf and the theoretical cdf of $Y$.
+We can check the quality of the sample distribution by plotting the empirical cdf and the theoretical cdf of $Y$ or the histogram overlayed with the density.
 
-```{r, fig.height=3.5, fig.width=4}
+```{r, fig.height=3.5, fig.width=8}
+par(mfrow=c(1, 2))
 smp_ecdf <- ecdf(smp)
-curve(smp_ecdf(x), xlim = c(0, 10))
+curve(smp_ecdf(x), xlim = c(0, 7))
 curve(pgamma(x, 5, 2), add = TRUE, col = "green")
+
+hist(smp, breaks = 100, probability = TRUE)
+curve(dgamma(x, 5, 2), add = TRUE, col = "green")
 ```
 
 Again, the approximation is excellent.
+
+
+### Example: Students t distribution
+
+Now we'll deomnstrate using the grid stretching technique for heavy-tailed distributions. We use the [students t distribution](https://en.wikipedia.org/wiki/Student%27s_t-distribution) with 2 degrees of freedom. All that's needed is to add a `gss` argument which specifies the $\sigma$ value in the technique [section 4.1.1. in @Grzelak2014].
+
+```{r}
+library(scmc)
+# create the sampler
+sampler <- univariate_sampler(function(x) qt(x, df = 2),
+                              gaussian_nodes(15),
+                              gss = 1.657)
+
+# generate 10000 random variates
+smp <- sampler(1e5)
+```
+We'll use the Kolmogorov-Smirnov test now to test the distribution
+```{r}
+ks.test(smp, function(x) pt(x, df = 2))
+```
+A large p-value indicates a good distribution.
+
+### Example: Beta distribution
+
+This time we demonstrate sampling from a bounded distribution. A good example is the [beta distribution](https://en.wikipedia.org/wiki/Beta_distribution). It comes in a wide variety of shapes, and we'll use the $B(0.5,0.5)$ distribution, with a distinct "U" shape.
+For this example we use the chebyshev points for interpolation, and interpolate directly $F_Y^{-1}$. This is equivalent to using a uniformly distributed $X$, so we'll set the `xdist="unif"` argument.
+
+```{r}
+library(scmc)
+# create the sampler
+sampler <- univariate_sampler(function(x) qbeta(x,  0.5, 0.5),
+                              chebyshev_nodes(15),
+                              xdist = "unif")
+
+# generate 10000 random variates
+smp <- sampler(1e5)
+```
+And we visualise the distribution with the histogram and run `ks.test`.
+```{r, fig.height=3.5, fig.width=4}
+hist(smp, breaks = 100, probability = TRUE)
+curve(dbeta(x, 0.5, 0.5), add = TRUE, col = "green")
+```
+```{r}
+ks.test(smp, function(x) pbeta(x, 0.5, 0.5))
+```
+which confirms a good approximation.
+
+## References
