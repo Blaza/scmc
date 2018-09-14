@@ -1,8 +1,6 @@
 ---
 title: "SCMC - Stochastic Collocation Monte Carlo"
-output:
-  github_document:
-    md_extensions: -tex_math_dollars
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
