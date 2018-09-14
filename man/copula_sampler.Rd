@@ -4,14 +4,12 @@
 \alias{copula_sampler}
 \title{Generate a sample from a copula}
 \usage{
-copula_sampler(copula, N, gss = 1.37, compile_c = FALSE)
+copula_sampler(copula, N, gss = 1.37)
 }
 \arguments{
 \item{copula}{An R object of class "Copula"}
 
 \item{N}{An integer indicating the number of collocation points to use for each dimension}
-
-\item{n}{The size of the sample to generate.}
 }
 \value{
 A function which takes one parameter ('n') and returns a matrix with dimensions (n,

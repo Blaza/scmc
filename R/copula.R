@@ -2,13 +2,12 @@
 #'
 #' Generates a sample from the specified copula object
 #'
-#' @param n The size of the sample to generate.
 #' @param copula An R object of class "Copula"
 #' @param N An integer indicating the number of collocation points to use for each dimension
 #' @return A function which takes one parameter ('n') and returns a matrix with dimensions (n,
 #'   dim(copula)) containing the sample from the copula, each row being one observation.
 #' @export
-copula_sampler <- function(copula, N, gss = 1.37, compile_c = FALSE) {
+copula_sampler <- function(copula, N, gss = 1.37) {
   if (!requireNamespace("copula", quietly = TRUE)) {
     stop("Package copula is needed to work with copulas. Please install it.",
          call. = FALSE)
@@ -21,7 +20,7 @@ copula_sampler <- function(copula, N, gss = 1.37, compile_c = FALSE) {
   y_vals <- log(-log(copula::cCopula(u_vals, copula, inverse = TRUE)))
 
   polys <- lapply(2:dim(copula), function(i) {
-    lagrange(y_vals[1 : (N^i), i], rep(list(col_pts), i), compile_c = compile_c)
+    lagrange(y_vals[1 : (N^i), i], rep(list(col_pts), i))
   })
 
   # sampler function

@@ -1,5 +1,5 @@
 #' @export
-newton <- function(FUN, col_pts, compile_c = FALSE) {
+newton <- function(FUN, col_pts) {
   if (is.numeric(col_pts))
     col_pts <- list(col_pts)
 
@@ -17,7 +17,6 @@ newton <- function(FUN, col_pts, compile_c = FALSE) {
   div_diffs <- divided_diffs(xs, yvals)
   coefs <- div_diffs[1, ]
 
-  #newton2function(xs, coefs)
   function(x) {
     newton_eval(x, xs, coefs)
   }
