@@ -78,8 +78,10 @@ For the next example, we’ll use the [gamma
 distribution](https://en.wikipedia.org/wiki/Gamma_distribution),
 specifically $\Gamma(5,2)$. This is a positive distribution, so we
 would like to transform it using the `log` transform to get a real
-variable and then upon sampling use the `exp` transform to get a sample
-from the original distribution. The code example follows
+valued random variable and then upon sampling use the `exp` transform to
+get a sample from the original distribution. Basically, we model
+$\log Y$ instead of $Y$ and sample $e^{\log Y}$ to get $Y$. The
+code example follows
 
 ``` r
 library(scmc)
