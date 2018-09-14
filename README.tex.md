@@ -74,11 +74,12 @@ The curves are nearly the same, so the approximation is good.
 
 ### Example: Gamma distribution
 
-For the next example, we’ll use the $\Gamma(5,2)$ distribution. This
-is a positive distribution, so we would like to transform it using the
-`log` transform to get a real variable and then upon sampling use the
-`exp` transform to get a sample from the original distribution. The code
-example follows
+For the next example, we’ll use the [gamma
+distribution](https://en.wikipedia.org/wiki/Gamma_distribution),
+specifically $\Gamma(5,2)$. This is a positive distribution, so we
+would like to transform it using the `log` transform to get a real
+variable and then upon sampling use the `exp` transform to get a sample
+from the original distribution. The code example follows
 
 ``` r
 library(scmc)
@@ -92,6 +93,9 @@ sampler <- univariate_sampler(function(x) qgamma(x, 5, 2),
 # generate 10000 random variates
 smp <- sampler(1e5)
 ```
+
+We can check the quality of the sample distribution by plotting the
+empirical cdf and the theoretical cdf of $Y$.
 
 ``` r
 smp_ecdf <- ecdf(smp)

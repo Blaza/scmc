@@ -52,7 +52,7 @@ smp <- sampler(1e5)
 In its basic form, the `univariate_sampler` function requires the inverse $F_Y^{-1}$ (i.e. the quantile function of $Y$) as the first argument, and the nodes for the interpolation. In cases where normally distributed $X$ are used, optimal nodes for interpolation are the nodes of the Gaussian quadrature with respect to the weight function $f_X(x)$ (density of $X$). The third argument to `univariate_sampler` is `xdist` which is by default `"norm"`, indicating the standard normal distribution.
 
 The quality of the generated sample can be visualized with it's density
-```{r}
+```{r, fig.height=3.5, fig.width=4}
 # plot the sample density
 plot(density(smp))
 
@@ -64,7 +64,7 @@ The curves are nearly the same, so the approximation is good.
 
 ### Example: Gamma distribution
 
-For the next example, we'll use the $\Gamma(5,2)$ distribution. This is a positive distribution, so we would like to transform it using the `log` transform to get a real variable and then upon sampling use the `exp` transform to get a sample from the original distribution. The code example follows
+For the next example, we'll use the [gamma distribution](https://en.wikipedia.org/wiki/Gamma_distribution), specifically $\Gamma(5,2)$. This is a positive distribution, so we would like to transform it using the `log` transform to get a real variable and then upon sampling use the `exp` transform to get a sample from the original distribution. The code example follows
 
 ```{r}
 library(scmc)
@@ -78,7 +78,10 @@ sampler <- univariate_sampler(function(x) qgamma(x, 5, 2),
 # generate 10000 random variates
 smp <- sampler(1e5)
 ```
-```{r}
+
+We can check the quality of the sample distribution by plotting the empirical cdf and the theoretical cdf of $Y$.
+
+```{r, fig.height=3.5, fig.width=4}
 smp_ecdf <- ecdf(smp)
 curve(smp_ecdf(x), xlim = c(0, 10))
 curve(pgamma(x, 5, 2), add = TRUE, col = "green")
