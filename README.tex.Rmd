@@ -63,3 +63,4 @@ curve(dlogis(x), add = TRUE, col = "green")
 ```
 
 The curves are nearly the same, so the approximation is good.
+
