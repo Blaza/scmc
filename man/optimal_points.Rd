@@ -19,7 +19,7 @@ points using the 2*N sample moments.}
 The N optimal collocation points for interpolation used in SCMC.
 }
 \description{
-Calculates optimal collocation points from (sample) moments of the approximating distribution
+Calculates optimal collocation points from (sample) moments of the approximating distribution using the Golub-Welsch algorithm
 }
 \details{
 Note: Using sample moments for a large sample from the approximating random variable gives

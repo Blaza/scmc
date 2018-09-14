@@ -36,6 +36,13 @@ NumericVector calc_optimal_points(NumericVector moments, int N) {
     }
   }
 
+  NumericVector ev = eigen_values(M);
+  if (min(ev) < 0) {
+    NumericVector negatives = ev[ev < 0];
+
+    M.diag() -= min(negatives);
+  }
+
   // Get R matrix from cholesky decomposition
   arma::mat R = arma::chol(M);
 

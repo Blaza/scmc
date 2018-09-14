@@ -1,6 +1,6 @@
 #' Calculate optimal collocation points from (sample) moments of a distribution
 #'
-#' Calculates optimal collocation points from (sample) moments of the approximating distribution
+#' Calculates optimal collocation points from (sample) moments of the approximating distribution using the Golub-Welsch algorithm
 #'
 #' Note: Using sample moments for a large sample from the approximating random variable gives
 #' similar results as using theoretical. For example, using sample = rnorm(1e6) gives similar points
@@ -29,8 +29,6 @@ optimal_points <- function(N, moment_fun = NULL, sample = NULL) {
 #'
 #' @param k The moment which to calculate
 #' @param sd The standard deviation of the normal distibution (mean is assumed 0)
-#' @param rate The rate parameter of the exponential distribution
-#' @param supp The vector (a, b) indicating the support of the uniform distribution
 #' @return The k-th moment of the distribution.
 #'
 #' @export
@@ -42,20 +40,17 @@ norm_moment_fun <- function(k, sd = 1) {
   sd^k * 2^n * gamma(n + 0.5) /sqrt(pi)
 }
 
-#' @rdname norm_moment_fun
+#' Gauss-Hermite quadrature nodes
+#'
+#' Calculate Gaussian quadrature nodes for interpolation with regard to the
+#' standard normal density as the weighting function
+#'
+#' @param n The number of points to generate
+#' @return A numeric vector containing n Gaussian quadrature nodes
 #' @export
-exp_moment_fun <- function(k, rate = 1) {
-  factorial(k) / (rate^k)
-}
-
-#' @rdname norm_moment_fun
-#' @export
-unif_moment_fun <- function(k, supp = c(0, 1)) {
-  a <- supp[1]
-  b <- supp[2]
-
-  n <- k+1
-  (b^n - a^n)/(n*(b-a))
+gaussian_nodes <- function(n) {
+  nodes <- optimal_points(n, norm_moment_fun)
+  nodes
 }
 
 
@@ -67,7 +62,7 @@ unif_moment_fun <- function(k, supp = c(0, 1)) {
 #' @param interval The interval over which to calculate Chebyshev nodes
 #' @return A numeric vector containing n Chebyshev nodes in the interval 'interval'
 #' @export
-chebyshev_nodes <- function(n, interval = c(-1, 1)) {
+chebyshev_nodes <- function(n, interval = c(0, 1)) {
   k <- seq_len(n)
   a <- interval[1]
   b <- interval[2]

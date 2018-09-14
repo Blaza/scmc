@@ -4,18 +4,13 @@
 \alias{lagrange}
 \title{Generate a Lagrange polynomial}
 \usage{
-lagrange(FUN, col_pts, compile_c = FALSE, digits = 16)
+lagrange(FUN, col_pts)
 }
 \arguments{
 \item{FUN}{The function to interpolate.}
 
 \item{col_pts}{The node points at which to calculate FUN, where the poly must equal FUN. Should
 be a list of node points for multivariate polynomial.}
-
-\item{compile_c}{Logical indicating whether to compile the function using Rcpp, resulting in
-faster evaluation later on.}
-
-\item{digits}{The number of decimal places to round the coefficients to.}
 }
 \value{
 The function which evaluates the Lagrange polynomial.

@@ -6,9 +6,9 @@
 \title{Create a univariate distribution sampler}
 \usage{
 univariate_sampler(inverse_cdf, col_pts, xdist = "norm", gss = 1,
-  compile_c = FALSE, transform = identity, digits = 16)
+  transform = identity, inv_transform = identity)
 
-conditional_sampler(inverse_cdf, col_pts, gss = 1, compile_c = FALSE)
+conditional_sampler(inverse_cdf, col_pts, gss = 1)
 }
 \arguments{
 \item{inverse_cdf}{The inverse cdf (i.e. quantile) function of the distribution to be sampled.}
@@ -18,11 +18,9 @@ scmc::optimal_points()).}
 
 \item{gss}{The sigma value of the approximating normal variable if using grid stretching.}
 
-\item{compile_c}{Logical indicating whether to compile the resulting sampling function as C code.}
+\item{transform}{A function to apply to the inverse_cdf before interpolation.}
 
-\item{transform}{A function to apply to the sample.}
-
-\item{digits}{The number of decimal places to round the polynomial coefficients to.}
+\item{inv_transform}{A function to apply to the sample after interpolating. Should be the inverse function of the transform argument}
 }
 \value{
 \itemize{ \item For univariate_sampler, a function which takes a single argument n, and
@@ -44,7 +42,6 @@ case must take k+1 arguments, where k is the number of conditions, and return th
 the variable Y|X_1, ..., X_k, taking the arguments in order: (X_1, ..., X_k, p), where p is from
 (0,1). For example, if we sample Y|X, we have a function \eqn{invcdf(x, p) = F^{-1}_{Y|X=x}(p).}
 
-Using the compile_c flag requires Rcpp and compiles the funtion that evaluates the polynomial
-used in sampling to C code. This results in about 4-5 times increase in speed of evaluation, but
-takes some time to compile.
+For univariate_sampler, col_pts should be a vector of nodes. For the conditional_sampler,
+col_pts should be a list of vectors containing the node points for each dimension.
 }
