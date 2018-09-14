@@ -1,6 +1,8 @@
 ---
 title: "SCMC - Stochastic Collocation Monte Carlo"
-output: github_document
+output:
+  github_document:
+    md_extensions: -tex_math_dollars -intraword_underscores
 ---
 
 ```{r setup, include=FALSE}
@@ -31,8 +33,8 @@ package capabilities.
 
 We'll generate variates from the [Logistic distribution](https://en.wikipedia.org/wiki/Logistic_distribution).
 
-The SCMC method implies interpolating \$F_Y^{-1}(F_X(x))\$, where $Y$ is the
-target random variable and \$X\$ is a random variable which can be efficiently
+The SCMC method implies interpolating $F_Y^{-1}(F_X(x))$, where $Y$ is the
+target random variable and $X$ is a random variable which can be efficiently
 generated, and generating the samples $y_i,\ i=1,\dots,n$ using the formula
 $y_i = F_Y^{-1}(F_X(\xi_i))$, where $\xi_i$ are variates from the $X$ distribution.
 In this example we'll use the standard normal variable $X$. By default, we use
