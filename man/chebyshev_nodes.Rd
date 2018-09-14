@@ -4,7 +4,7 @@
 \alias{chebyshev_nodes}
 \title{Chebyshev Nodes}
 \usage{
-chebyshev_nodes(n, interval = c(-1, 1))
+chebyshev_nodes(n, interval = c(0, 1))
 }
 \arguments{
 \item{n}{The number of points to generate}

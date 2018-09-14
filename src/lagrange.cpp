@@ -35,3 +35,44 @@ NumericVector C_lagrange_weights(List col_pts, IntegerMatrix indices) {
 
   return lambda_prods;
 }
+
+// [[Rcpp::export]]
+NumericVector lagrange_eval(NumericMatrix var_vecs, NumericMatrix nodes,
+                            NumericVector y, NumericVector lambda_prods) {
+
+  NumericVector evaluated(var_vecs.nrow());
+  NumericVector vars(var_vecs.ncol());
+  int n = var_vecs.nrow();
+  int ysize = y.size();
+  int var_count = var_vecs.ncol();
+
+  for (int i = 0; i != n; i++) {
+    vars = var_vecs(i, _);
+    double bary_nominator = 0;
+    double bary_denominator = 0;
+
+    for (int j = 0; j != ysize; j++) {
+
+      double common_element = lambda_prods[j];
+
+      for (int k = 0; k != var_count; k++) {
+        if (vars[k] != nodes(j, k)) {
+          common_element /= vars[k] - nodes(j, k);
+        }
+        else {
+          // Monkey patch! We should find an elegant way to switch to lower
+          // dimensional interpolation at nodes. Right now, this works ok, as
+          // the probability of evaluating at exactly a node point is near zero.
+          common_element /= vars[k] - nodes(j, k) + 1e-10;
+        }
+      }
+
+      bary_nominator += common_element * y[j];
+      bary_denominator += common_element;
+    }
+
+    evaluated[i] = bary_nominator / bary_denominator;
+  }
+
+  return evaluated;
+}

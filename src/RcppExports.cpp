@@ -6,6 +6,18 @@
 
 using namespace Rcpp;
 
+// divided_diffs
+NumericMatrix divided_diffs(NumericVector xs, NumericVector ys);
+RcppExport SEXP _scmc_divided_diffs(SEXP xsSEXP, SEXP ysSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type xs(xsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type ys(ysSEXP);
+    rcpp_result_gen = Rcpp::wrap(divided_diffs(xs, ys));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_lagrange_weights
 NumericVector C_lagrange_weights(List col_pts, IntegerMatrix indices);
 RcppExport SEXP _scmc_C_lagrange_weights(SEXP col_ptsSEXP, SEXP indicesSEXP) {
@@ -15,6 +27,45 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type col_pts(col_ptsSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type indices(indicesSEXP);
     rcpp_result_gen = Rcpp::wrap(C_lagrange_weights(col_pts, indices));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lagrange_eval
+NumericVector lagrange_eval(NumericMatrix var_vecs, NumericMatrix nodes, NumericVector y, NumericVector lambda_prods);
+RcppExport SEXP _scmc_lagrange_eval(SEXP var_vecsSEXP, SEXP nodesSEXP, SEXP ySEXP, SEXP lambda_prodsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type var_vecs(var_vecsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lambda_prods(lambda_prodsSEXP);
+    rcpp_result_gen = Rcpp::wrap(lagrange_eval(var_vecs, nodes, y, lambda_prods));
+    return rcpp_result_gen;
+END_RCPP
+}
+// monom_eval
+NumericVector monom_eval(NumericVector x, NumericVector coefs);
+RcppExport SEXP _scmc_monom_eval(SEXP xSEXP, SEXP coefsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type coefs(coefsSEXP);
+    rcpp_result_gen = Rcpp::wrap(monom_eval(x, coefs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// newton_eval
+NumericVector newton_eval(const NumericVector x, const NumericVector nodes, const NumericVector coefs);
+RcppExport SEXP _scmc_newton_eval(SEXP xSEXP, SEXP nodesSEXP, SEXP coefsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type coefs(coefsSEXP);
+    rcpp_result_gen = Rcpp::wrap(newton_eval(x, nodes, coefs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -44,7 +95,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_scmc_divided_diffs", (DL_FUNC) &_scmc_divided_diffs, 2},
     {"_scmc_C_lagrange_weights", (DL_FUNC) &_scmc_C_lagrange_weights, 2},
+    {"_scmc_lagrange_eval", (DL_FUNC) &_scmc_lagrange_eval, 4},
+    {"_scmc_monom_eval", (DL_FUNC) &_scmc_monom_eval, 2},
+    {"_scmc_newton_eval", (DL_FUNC) &_scmc_newton_eval, 3},
     {"_scmc_calc_optimal_points", (DL_FUNC) &_scmc_calc_optimal_points, 2},
     {"_scmc_sample_optimal_points", (DL_FUNC) &_scmc_sample_optimal_points, 2},
     {NULL, NULL, 0}
