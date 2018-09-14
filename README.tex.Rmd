@@ -130,11 +130,12 @@ sampler <- univariate_sampler(function(x) qbeta(x,  0.5, 0.5),
 # generate 10000 random variates
 smp <- sampler(1e5)
 ```
-And we visualise the distribution with the histogram and run `ks.test`.
+And we visualise the distribution with the histogram
 ```{r, fig.height=3.5, fig.width=4}
 hist(smp, breaks = 100, probability = TRUE)
 curve(dbeta(x, 0.5, 0.5), add = TRUE, col = "green")
 ```
+and run `ks.test`
 ```{r}
 ks.test(smp, function(x) pbeta(x, 0.5, 0.5))
 ```

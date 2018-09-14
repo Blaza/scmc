@@ -171,27 +171,25 @@ sampler <- univariate_sampler(function(x) qbeta(x,  0.5, 0.5),
 smp <- sampler(1e5)
 ```
 
-And we visualise the distribution with the histogram and run `ks.test`.
+And we visualise the distribution with the histogram
 
 ``` r
 hist(smp, breaks = 100, probability = TRUE)
 curve(dbeta(x, 0.5, 0.5), add = TRUE, col = "green")
 ```
 
-![](README.tex_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README.tex_files/figure-gfm/unnamed-chunk-9-1.png)<!-- --> and run
+`ks.test`
 
 ``` r
 ks.test(smp, function(x) pbeta(x, 0.5, 0.5))
 ```
 
-    ## Warning in ks.test(smp, function(x) pbeta(x, 0.5, 0.5)): ties should not be
-    ## present for the Kolmogorov-Smirnov test
-
     ## 
     ##  One-sample Kolmogorov-Smirnov test
     ## 
     ## data:  smp
-    ## D = 0.002812, p-value = 0.4078
+    ## D = 0.0037263, p-value = 0.1244
     ## alternative hypothesis: two-sided
 
 which confirms a good approximation.
